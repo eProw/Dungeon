@@ -7,8 +7,9 @@ namespace Dungeon
 		public MapGen mapGen;
 		public Game ()
 		{
+            Console.WriteLine("Hello world");
 
-
+            Console.ReadKey(true);
         }
 
 	}
