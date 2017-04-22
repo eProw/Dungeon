@@ -9,7 +9,7 @@ namespace Dungeon
 		public Game ()
 		{
 			render = new Render(Console.WindowWidth,Console.WindowHeight);
-            Console.WriteLine("Hello world");
+            Console.WriteLine("Hello world");//Foo
 
             Console.ReadKey(true);
 			
