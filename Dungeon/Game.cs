@@ -11,7 +11,7 @@ namespace Dungeon
             Console.WriteLine("Hello world");
 
             Console.ReadKey(true);
-            //Initialize variables by calling it out of this constructor
+            //Initialize variables by calling it out of the constructor
             Start();
         }
 
