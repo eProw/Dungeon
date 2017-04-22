@@ -4,7 +4,7 @@ namespace Dungeon
 {
 	public class Game
 	{
-		public MapGen mGen;
+		public MapGen mapGen;
 		public Render render;
 		public Game ()
 		{
@@ -12,10 +12,10 @@ namespace Dungeon
 
             Console.ReadKey(true);
             //Initialize variables by calling it out of the constructor
-            Init();
+            Start();
         }
 
-        void Init()
+        void Start()
         {
             render = new Render(Console.WindowWidth, Console.WindowHeight);
         }
