@@ -8,7 +8,7 @@ namespace Dungeon
 		public Render render;
 		public Game ()
 		{
-            Console.WriteLine("Hello world");
+            Console.WriteLine("Game");
 
             Console.ReadKey(true);
             //Initialize variables by calling it out of this constructor
