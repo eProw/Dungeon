@@ -3,9 +3,10 @@ using System.Collections.Generic;
 
 namespace Dungeon
 {
-	public class MapGen:Game
+	public class MapGen
 	{
 		Random rand;
+        public bool ready = false;
 
 		bool[,] map;
 
@@ -22,7 +23,9 @@ namespace Dungeon
 				return _H;
 		}} 
 
-		public MapGen (int _w, int _h, int seed)
+        public int fillPerc;
+
+		public MapGen (int _w, int _h, int seed, int perc)
 		{
 			rand = new Random (seed);
 			_W = _w;
@@ -30,44 +33,77 @@ namespace Dungeon
 			map = new bool[_w,_h];
 
 			Map = new Tile[_w,_h];
+            fillPerc = perc;
+            GenerateMap();
 		}
 
 		public void GenerateMap(){
 			GenerateRandomMap ();
-		}
+            for(int i = 0; i < 3; i++)
+            SmoothMap();
 
-		void GenerateRandomMap(){
-			InitMap ();
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    Map[x, y] = new Tile(x, y, map[x, y] ? tileType.wall : tileType.floor);
+                }
+            }
 
-			List<List<Coords>> rooms = new List<List<Coords>> ();
-			int numOfRooms = rand.Next (4,8);
+            ready = true;
+        }
 
-			for(int i =0; i < numOfRooms; i++){
-				List<Coords> room = new List<Coords> ();
-				int X = rand.Next (4, w - 4), maxX = rand.Next (4,10);
-				int Y = rand.Next (4, h - 4), maxY = rand.Next (4,10);;
+        void GenerateRandomMap()
+        {
+            InitMap();
+            for (int x = 0; x < w; x++)
+                for (int y = 0; y < h; y++)
+                {
+                    map[x, y] = rand.Next(0,100) < fillPerc;
+                }
+        }
 
-				for (int x = X;x < maxX;x++){
-					for (int y = Y;y < maxY;y++){
-						room.Add (new Coords (x, y));
-					}
-				}
+        void SmoothMap()
+        {
+            for (int x = 0; x < w; x++)
+                for (int y = 0; y < h; y++)
+                {
+                    int neighbours = GetNeighbours(x,y);
+                    if (neighbours > 4)
+                    {
+                        map[x, y] = true;
+                    }
+                    else if (neighbours < 4)
+                    {
+                        map[x, y] = false;
+                    }
+                }
+        }
 
-				rooms.Add (room);
-			}
+        int GetNeighbours(int xOffset,int yOffset)
+        {
+            int neighbours = 0;
 
-			foreach (List<Coords> room in rooms) {
-				foreach (Coords c in room) {
-					map [c.x, c.y] = true;
-				}
-			}
-
-			for(int x = 0; x < w;x++){
-				for(int y = 0; y < h;y++){
-					Map [x, y] = new Tile (x,y,map[x,y]?tileType.floor:tileType.wall);
-				}
-			}
-		}
+            for(int x = xOffset - 1; x <= xOffset + 1; x++)
+            {
+                for(int y = yOffset - 1; y <= yOffset + 1; y++)
+                {
+                    if (x > 0 && x < w && y > 0 && y < h)
+                    {
+                        if(x != xOffset || y != yOffset)
+                            if (map[x, y])
+                            {
+                                neighbours++;
+                            }
+                    }   
+                    else
+                    {
+                        neighbours++;
+                    }
+                }
+            }
+            return neighbours;
+        }
 
 		void InitMap(){
 			for(int x = 0; x < w;x++){
