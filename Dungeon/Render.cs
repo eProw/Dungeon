@@ -6,7 +6,9 @@ namespace Dungeon
 	{
 		int w,h;
         MapGen mapGen;
-		char[,] screen;
+		char[,] screen,lastFrame;
+
+        int frameNum = 0;
 
 		public Render (int _w , int _h,MapGen _mapGen)
 		{
@@ -14,6 +16,7 @@ namespace Dungeon
 			h= _h;
 
 			screen = new char[w,h];
+            lastFrame = new char[w,h];
             mapGen = _mapGen;
 		}
 
@@ -36,9 +39,13 @@ namespace Dungeon
             for (int x = 0; x < w; x++)
                 for (int y = 0; y < h; y++)
                 {
-                    Console.SetCursorPosition(x,y);
-                    Console.Write(screen[x,y]);
+                    if (screen[x,y] != lastFrame[x,y]) {
+                        Console.SetCursorPosition(x, y);
+                        Console.Write(screen[x, y]);
+                        lastFrame[x, y] = screen[x, y];
+                    }
                 }
+            frameNum++;
         }
 	}
 }

@@ -15,8 +15,9 @@ namespace Dungeon
 
         public void Start()
         {
+            //Console.ReadKey();
             Console.WriteLine("Loading...");
-            mapGen = new MapGen(200,60,62543,50);
+            mapGen = new MapGen(200,200,62543,50);
             render = new Render(Console.WindowWidth, Console.WindowHeight,mapGen);
 
             render.BufferMapAt(0,0);
@@ -27,9 +28,14 @@ namespace Dungeon
 
         void Run()
         {
+            int x = 0, y = 0;
             while (running)
             {
-
+                render.BufferMapAt(x, y);
+                render.RenderMap();
+                x++;
+                y++;
+                //System.Threading.Thread.Sleep(0);
             }
 
         }
