@@ -25,7 +25,9 @@ namespace Dungeon
 
         public int fillPerc;
 
-		public MapGen (int _w, int _h, int seed, int perc)
+        public List<Coord> region;
+
+        public MapGen (int _w, int _h, int seed, int perc)
 		{
 			rand = new Random (seed);
 			_W = _w;
@@ -37,18 +39,23 @@ namespace Dungeon
             GenerateMap();
 		}
 
-		public void GenerateMap(){
+        public MapGen(int _w, int _h, int perc)
+        {
+            rand = new Random();
+            _W = _w;
+            _H = _h;
+            map = new bool[_w, _h];
+
+            Map = new Tile[_w, _h];
+            fillPerc = perc;
+            GenerateMap();
+        }
+
+        public void GenerateMap(){
 			GenerateRandomMap ();
             for(int i = 0; i < 3; i++)
             SmoothMap();
-
-            for (int x = 0; x < w; x++)
-            {
-                for (int y = 0; y < h; y++)
-                {
-                    Map[x, y] = new Tile(x, y, map[x, y] ? tileType.wall : tileType.floor);
-                }
-            }
+            AddMisc();
 
             ready = true;
         }
@@ -76,6 +83,65 @@ namespace Dungeon
                     else if (neighbours < 4)
                     {
                         map[x, y] = false;
+                    }
+                }
+        }
+
+        void AddMisc()
+        {
+
+           List<List<Coord>> regions = GetRegions();
+
+            int bestId = 0, maxCount = 0;
+
+            for (int i = 0; i < regions.Count; i++)
+            {
+                if (regions[i].Count > maxCount)
+                {
+                    maxCount = regions[i].Count;
+                    bestId = i;
+                }
+            }
+
+            region = regions[bestId];
+            for (int x = 0; x < w; x++)
+                for (int y = 0; y < h; y++)
+                {
+                    map[x, y] = true;
+                }
+
+            foreach (Coord c in region)
+            {
+                map[c.x, c.y] = false;
+            }
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    Map[x, y] = new Tile(x, y, map[x, y] ? tileType.wall : tileType.floor);
+                }
+            }
+
+            for (int x = 0; x < w; x++)
+                for (int y = 0; y < h; y++)
+                {
+                    if (Map[x,y].tType == tileType.floor)
+                    {
+                        tileType t = tileType.floor;
+
+                        int num = rand.Next(100);
+
+                        //Colocar diversos tiles en el mapa
+                        if(num == 1)
+                        {
+                            t = tileType.grass;
+                        }else if(num == 3)
+                        {
+
+                        }
+
+                        Map[x, y].tType = t;
                     }
                 }
         }
@@ -112,7 +178,64 @@ namespace Dungeon
 				}
 			}
 		}
-	}
+
+        List<Coord> GetRegionTiles(int startX, int startY)
+        {
+            List<Coord> tiles = new List<Coord>();
+            int[,] mapFlags = new int[w, h];
+
+            Queue<Coord> queue = new Queue<Coord>();
+            queue.Enqueue(new Coord(startX, startY));
+            mapFlags[startX, startY] = 1;
+
+            while (queue.Count > 0)
+            {
+                Coord tile = queue.Dequeue();
+                tiles.Add(tile);
+
+                for (int x = tile.x - 1; x <= tile.x + 1; x++)
+                {
+                    for (int y = tile.y - 1; y <= tile.y + 1; y++)
+                    {
+                        if ((x>=0 && x < w && y >=0 && y<h)&& (y == tile.y || x == tile.x))
+                        {
+                            if (mapFlags[x, y] == 0 && !map[x, y])
+                            {
+                                mapFlags[x, y] = 1;
+                                queue.Enqueue(new Coord(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+            return tiles;
+        }
+
+        List<List<Coord>> GetRegions()
+        {
+            List<List<Coord>> regions = new List<List<Coord>>();
+            int[,] mapFlags = new int[w, h];
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    if (mapFlags[x, y] == 0 && !map[x, y])
+                    {
+                        List<Coord> newRegion = GetRegionTiles(x, y);
+                        regions.Add(newRegion);
+
+                        foreach (Coord tile in newRegion)
+                        {
+                            mapFlags[tile.x, tile.y] = 1;
+                        }
+                    }
+                }
+            }
+
+            return regions;
+        }
+    }
 
 	public class Tile{
 		public Item itemContainer;
@@ -128,12 +251,13 @@ namespace Dungeon
 	public enum tileType{
 		floor,
 		wall,
-		hole
+		hole,
+        grass
 	}
 
-	struct Coords {
+	public struct Coord {
 		public int x,y;
-		public Coords(int _x, int _y){
+		public Coord(int _x, int _y){
 			x = _x;	
 			y = _y;
 		}

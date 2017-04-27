@@ -25,7 +25,26 @@ namespace Dungeon
 				for(int y = 0; y < h;y++){
                     if (x + X < mapGen.w && y + Y < mapGen.h)
                     {
-                        screen[x, y] = mapGen.Map[x + X, y + Y].tType == tileType.floor ? ' ' : '░';
+                        char c = ' ';
+
+                        switch (mapGen.Map[x + X, y + Y].tType)
+                        {
+                            case tileType.wall:
+                                c = '░';
+                                break;
+
+                            case tileType.floor:
+                                c = ' ';
+                                break;
+
+                            case tileType.grass:
+                                c = ',';
+                                break;
+
+                            default:
+                                break;
+                        }
+                        screen[x, y] = c;
                     }
                     else
                     {
