@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 
 namespace Dungeon
 {
@@ -17,7 +18,7 @@ namespace Dungeon
         {
             //Console.ReadKey();
             Console.WriteLine("Loading...");
-            mapGen = new MapGen(600,300,50);
+            mapGen = new MapGen(150,100,50);
             render = new Render(Console.WindowWidth, Console.WindowHeight,mapGen);
 
             render.BufferMapAt(0,0);
@@ -29,18 +30,28 @@ namespace Dungeon
         void Run()
         {
             int x = 0, y = 0;
-            x = mapGen.region[0].x;
-            y = mapGen.region[0].y;
 
             while (running)
             {
+
+                //Console.ReadKey(true);
+
+
                 render.BufferMapAt(x,y);
                 render.RenderMap();
-
                 //AÑADIR INPUT PARA EXPLORAR CUEVA
-                x++;
-                y++;
-                System.Threading.Thread.Sleep(100);
+                if (Cursor.Position.X > 700)
+                    x++;
+                else if (Cursor.Position.X < 400)
+                    x--;
+
+                if (Cursor.Position.Y > 600)
+                    y++;
+                else if (Cursor.Position.Y < 300)
+                    y--;
+                //x--;
+                //y--;
+                System.Threading.Thread.Sleep(10);
             }
 
         }

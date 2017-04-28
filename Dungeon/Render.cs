@@ -23,7 +23,7 @@ namespace Dungeon
 		public void BufferMapAt(int X,int Y){
 			for(int x = 0; x < w;x++)
 				for(int y = 0; y < h;y++){
-                    if (x + X < mapGen.w && y + Y < mapGen.h)
+                    if (x + X < mapGen.w && x+X >0 && y + Y < mapGen.h && y+Y>0)
                     {
                         char c = ' ';
 

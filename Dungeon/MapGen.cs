@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Dungeon
 {
@@ -34,7 +35,6 @@ namespace Dungeon
 			_H = _h;
 			map = new bool[_w,_h];
 
-			Map = new Tile[_w,_h];
             fillPerc = perc;
             GenerateMap();
 		}
@@ -57,9 +57,18 @@ namespace Dungeon
             SmoothMap();
             AddMisc();
 
+            Bitmap img = new Bitmap(w,h);
+
+            for (int x = 0; x < w; x++)
+                for (int y = 0; y < h; y++)
+                {
+                    img.SetPixel(x,y,map[x,y]?Color.White:Color.Black);
+                }
+
+            img.Save("C:/Users/Usuario/Desktop/cave.png", System.Drawing.Imaging.ImageFormat.Png);
             ready = true;
         }
-
+        
         void GenerateRandomMap()
         {
             InitMap();
@@ -104,6 +113,26 @@ namespace Dungeon
             }
 
             region = regions[bestId];
+
+            int maxX = 0, maxY = 0, minX = region[0].x, minY = region[0].y;
+
+            foreach (Coord c in region)
+            {
+                if (c.x > maxX)
+                    maxX = c.x;
+                if (c.x < minX)
+                    minX = c.x;
+                if (c.y > maxY)
+                    maxY = c.y;
+                if (c.y < minY)
+                    minY = c.y;
+            }
+
+            _W = maxX - minX;
+            _H = maxY - minY;
+
+            map = new bool[w+1, h+1];
+
             for (int x = 0; x < w; x++)
                 for (int y = 0; y < h; y++)
                 {
@@ -112,8 +141,10 @@ namespace Dungeon
 
             foreach (Coord c in region)
             {
-                map[c.x, c.y] = false;
+                map[c.x-minX, c.y-minY] = false;
             }
+
+            Map = new Tile[w, h];
 
             for (int x = 0; x < w; x++)
             {
