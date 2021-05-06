@@ -1,1 +1,1 @@
-A roguelike-inspired procedurally generated console game
+A roguelike-inspired procedurally generated console based game
